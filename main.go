@@ -4,17 +4,43 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
+	"runtime"
 
+	"github.com/Lyon52222/snippetsbag/pkg/app"
 	"github.com/Lyon52222/snippetsbag/pkg/utils"
+	"github.com/integrii/flaggy"
 	"github.com/jroimartin/gocui"
 )
 
 var (
-	snippetsDir string
+	snippetsDir = ".snippets"
+	version     = "unversioned"
+	date        string
 )
 
 func main() {
+	info := fmt.Sprintf(
+		"%s\nData: %s\n SnippetsDir: %s\nOS: %s\n",
+		version,
+		date,
+		snippetsDir,
+		runtime.GOOS,
+	)
+	flaggy.SetName("SnippetsBag")
+	flaggy.SetDescription("Manage your code snippets")
+	flaggy.SetVersion(info)
+
+	flaggy.Parse()
+
+	app, err := app.NewApp()
+	if err == nil {
+		err = app.Run()
+	}
+}
+
+func runDirct() {
 	setupApp()
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
@@ -85,7 +111,12 @@ func layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "Preview"
-		fmt.Fprintln(v, "preview")
+		snippet, err := utils.ReadSnippet(path.Join(path.Join(snippetsDir, "Python"), "test.py"))
+		if err == nil {
+			v.Write(snippet)
+		} else {
+			log.Panicln(err)
+		}
 	}
 	return nil
 }

@@ -1,6 +1,10 @@
 package utils
 
-import "path"
+import (
+	"io/ioutil"
+	"os"
+	"path"
+)
 
 func GetAllSnippets(configDir string) []string {
 	var allSnippets []string
@@ -20,4 +24,12 @@ func GetAllFolders(configDir string) []string {
 		allFolders = append(allFolders, file)
 	}
 	return allFolders
+}
+
+func ReadSnippet(snippetPath string) ([]byte, error) {
+	f, err := os.Open(snippetPath)
+	if err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(f)
 }
