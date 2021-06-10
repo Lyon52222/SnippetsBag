@@ -3,14 +3,8 @@ package gui
 import (
 	"fmt"
 	"log"
-	"path"
 
-	"github.com/Lyon52222/snippetsbag/pkg/utils"
 	"github.com/jroimartin/gocui"
-)
-
-var (
-	snippetsDir = ".snippets"
 )
 
 // getFocusLayout returns a manager function for when view gain and lose focus
@@ -78,44 +72,50 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 	g.Highlight = true
 	width, height := g.Size()
 
-	if v, err := g.SetView("collections", 0, 0, width/6, height/4); err != nil {
+	if v, err := g.SetView(COLLECTIONS_PANEL, 0, 0, width/6, height/4); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 		v.Title = "Personal Collections"
-		fmt.Fprintln(v, "\uf719 All Snippets")
-		fmt.Fprintln(v, "\ue7c5 Vim")
-		fmt.Fprintln(v, "\ue795 Shell")
+		v.SelBgColor = gocui.ColorBlack
+		v.SelFgColor = gocui.ColorWhite | gocui.AttrBold
+
+		v.Highlight = true
+		gui.Collections, err = NewColletionsPanel(v)
+		if err != nil {
+			return err
+		}
+		gui.Collections.ShowCollections()
 	}
 
-	if v, err := g.SetView("folders", 0, height/4, width/6, height-1); err != nil {
+	if v, err := g.SetView(FOLDERS_PANEL, 0, height/4, width/6, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 		v.Title = "Folders"
-		childFolders := utils.GetAllFolders(snippetsDir)
+		childFolders := gui.Data.GetAllFolders()
 		for _, f := range childFolders {
 			fmt.Fprintln(v, f)
 		}
 	}
 
-	if v, err := g.SetView("snippets", width/6, 0, width/5*2, height-1); err != nil {
+	if v, err := g.SetView(SNIPPETS_PANEL, width/6, 0, width/5*2, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 		v.Title = "Snippets"
-		snippets := utils.GetAllSnippets(snippetsDir)
+		snippets := gui.Data.GetAllSnippets()
 		for _, s := range snippets {
 			fmt.Fprintln(v, s)
 		}
 	}
 
-	if v, err := g.SetView("preview", width/5*2, 0, width-1, height-1); err != nil {
+	if v, err := g.SetView(PREVIEW_PANEL, width/5*2, 0, width-1, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 		v.Title = "Preview"
-		snippet, err := utils.ReadSnippet(path.Join(path.Join(snippetsDir, "Python"), "test.py"))
+		snippet, err := gui.Data.ReadSnippet("/Users/admin/.snippets/Python/test.py")
 		if err == nil {
 			v.Write(snippet)
 		} else {

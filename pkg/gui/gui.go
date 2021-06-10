@@ -1,20 +1,30 @@
 package gui
 
 import (
+	"github.com/Lyon52222/snippetsbag/pkg/config"
+	"github.com/Lyon52222/snippetsbag/pkg/data"
 	"github.com/jroimartin/gocui"
 	"github.com/sirupsen/logrus"
 )
 
 type Gui struct {
-	g   *gocui.Gui
-	Log *logrus.Entry
-
-	// this tells us whether our views have been initially set up
-	ViewsSetup bool
+	g           *gocui.Gui
+	Log         *logrus.Entry
+	Config      *config.AppConfig
+	Data        *data.DataLoader
+	Collections *CollectionsPanel
 }
 
-func NewGui() (*Gui, error) {
-	gui := &Gui{}
+func NewGui(config *config.AppConfig) (*Gui, error) {
+	gui := &Gui{
+		Config: config,
+	}
+	data, err := data.NewData(config)
+	if err != nil {
+		return gui, err
+	}
+	gui.Data = data
+
 	return gui, nil
 }
 
@@ -30,13 +40,24 @@ func (gui *Gui) Run() error {
 
 	g.SetManager(gocui.ManagerFunc(gui.layout), gocui.ManagerFunc(gui.getFocusLayout()))
 
+	g.SetCurrentView(COLLECTIONS_PANEL)
+
 	if err = gui.keybindings(g); err != nil {
 		return err
 	}
-	gui.Log.Info("starting main loop")
 
 	err = g.MainLoop()
 	return err
+}
+
+func (gui *Gui) handleCollectionsNextLine(g *gocui.Gui, v *gocui.View) error {
+	gui.Collections.Movedown()
+	return nil
+}
+
+func (gui *Gui) handleCollectionsPreLine(g *gocui.Gui, v *gocui.View) error {
+	gui.Collections.Moveup()
+	return nil
 }
 
 func (gui *Gui) quit(g *gocui.Gui, v *gocui.View) error {

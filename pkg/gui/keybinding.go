@@ -62,6 +62,33 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 			Modifier: gocui.ModNone,
 			Handler:  gui.quit,
 		},
+		{
+			ViewName: "",
+			Key:      gocui.KeyCtrlC,
+			Modifier: gocui.ModNone,
+			Handler:  gui.quit,
+		},
+		{
+			ViewName: "",
+			Key:      't',
+			Modifier: gocui.ModNone,
+			Handler:  gui.handleCollectionsNextLine,
+		},
+	}
+
+	panelMap := map[string]struct {
+		onKeyUpPress   func(*gocui.Gui, *gocui.View) error
+		onKeyDownPress func(*gocui.Gui, *gocui.View) error
+		onClick        func(*gocui.Gui, *gocui.View) error
+	}{
+		COLLECTIONS_PANEL: {onKeyUpPress: gui.handleCollectionsNextLine, onKeyDownPress: gui.handleCollectionsNextLine, onClick: gui.handleCollectionsNextLine},
+	}
+
+	for viewName, functions := range panelMap {
+		bindings = append(bindings, []*Binding{
+			{ViewName: viewName, Key: 'k', Modifier: gocui.ModNone, Handler: functions.onKeyUpPress},
+			{ViewName: viewName, Key: 'j', Modifier: gocui.ModNone, Handler: functions.onKeyDownPress},
+		}...)
 	}
 	return bindings
 }
