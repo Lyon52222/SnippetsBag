@@ -1,7 +1,6 @@
 package gui
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/jroimartin/gocui"
@@ -77,15 +76,19 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "Personal Collections"
-		v.SelBgColor = gocui.ColorBlack
-		v.SelFgColor = gocui.ColorWhite | gocui.AttrBold
-
 		v.Highlight = true
+		v.SelBgColor = gocui.ColorGreen
+		v.SelFgColor = gocui.ColorBlack
+
 		gui.Collections, err = NewColletionsPanel(v)
 		if err != nil {
 			return err
 		}
 		gui.Collections.ShowCollections()
+		if _, err := g.SetCurrentView(COLLECTIONS_PANEL); err != nil {
+			return err
+		}
+
 	}
 
 	if v, err := g.SetView(FOLDERS_PANEL, 0, height/4, width/6, height-1); err != nil {
@@ -93,10 +96,14 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "Folders"
-		childFolders := gui.Data.GetAllFolders()
-		for _, f := range childFolders {
-			fmt.Fprintln(v, f)
+		v.SelBgColor = gocui.ColorGreen
+		v.SelFgColor = gocui.ColorBlack
+		gui.Folders, err = NewFoldersPanel(v)
+		if err != nil {
+			return err
 		}
+		gui.Folders.AddFolders(gui.Data.GetAllFolders())
+		gui.Folders.ShowFolders()
 	}
 
 	if v, err := g.SetView(SNIPPETS_PANEL, width/6, 0, width/5*2, height-1); err != nil {
@@ -104,10 +111,15 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "Snippets"
-		snippets := gui.Data.GetAllSnippets()
-		for _, s := range snippets {
-			fmt.Fprintln(v, s)
+		v.Highlight = true
+		v.SelBgColor = gocui.ColorGreen
+		v.SelFgColor = gocui.ColorBlack
+		gui.Snippets, err = NewSnippetsPanel(v)
+		if err != nil {
+			return err
 		}
+		gui.Snippets.AddSnippets(gui.Data.GetAllSnippets())
+		gui.Snippets.ShowSnippets()
 	}
 
 	if v, err := g.SetView(PREVIEW_PANEL, width/5*2, 0, width-1, height-1); err != nil {

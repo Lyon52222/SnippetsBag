@@ -8,7 +8,6 @@ import (
 
 type CollectionsPanel struct {
 	v          *gocui.View
-	title      string
 	colletions []string
 }
 
@@ -27,23 +26,31 @@ func (c *CollectionsPanel) ShowCollections() {
 	}
 }
 
-func (c *CollectionsPanel) currentCursorY() int {
-	_, y := c.v.Cursor()
-	return y
+func (c *CollectionsPanel) cursorDown(g *gocui.Gui, v *gocui.View) error {
+	if v != nil {
+		cx, cy := v.Cursor()
+		if cy+1 < len(c.colletions) {
+			if err := v.SetCursor(cx, cy+1); err != nil {
+				ox, oy := v.Origin()
+				if err := v.SetOrigin(ox, oy+1); err != nil {
+					return err
+				}
+			}
+
+		}
+	}
+	return nil
 }
 
-func (c *CollectionsPanel) Moveup() error {
-	y := c.currentCursorY() - 1
-	if y < 0 {
-		return nil
+func (c *CollectionsPanel) cursorUp(g *gocui.Gui, v *gocui.View) error {
+	if v != nil {
+		ox, oy := v.Origin()
+		cx, cy := v.Cursor()
+		if err := v.SetCursor(cx, cy-1); err != nil && oy > 0 {
+			if err := v.SetOrigin(ox, oy-1); err != nil {
+				return err
+			}
+		}
 	}
-	return c.v.SetCursor(0, y)
-}
-
-func (c *CollectionsPanel) Movedown() error {
-	y := c.currentCursorY() + 1
-	if y >= len(c.colletions) {
-		return nil
-	}
-	return c.v.SetCursor(0, y)
+	return nil
 }

@@ -13,6 +13,8 @@ type Gui struct {
 	Config      *config.AppConfig
 	Data        *data.DataLoader
 	Collections *CollectionsPanel
+	Folders     *FoldersPanel
+	Snippets    *SnipeetsPanel
 }
 
 func NewGui(config *config.AppConfig) (*Gui, error) {
@@ -34,13 +36,12 @@ func (gui *Gui) Run() error {
 	if err != nil {
 		return err
 	}
-	gui.g = g
 	defer g.Close()
-	//userConfig=gui.Config.GetUserConfig()
 
-	g.SetManager(gocui.ManagerFunc(gui.layout), gocui.ManagerFunc(gui.getFocusLayout()))
+	gui.g = g
 
-	g.SetCurrentView(COLLECTIONS_PANEL)
+	//g.SetManager(gocui.ManagerFunc(gui.layout), gocui.ManagerFunc(gui.getFocusLayout()))
+	g.SetManagerFunc(gui.layout)
 
 	if err = gui.keybindings(g); err != nil {
 		return err
@@ -51,13 +52,57 @@ func (gui *Gui) Run() error {
 }
 
 func (gui *Gui) handleCollectionsNextLine(g *gocui.Gui, v *gocui.View) error {
-	gui.Collections.Movedown()
+	gui.Collections.cursorDown(g, v)
 	return nil
 }
 
 func (gui *Gui) handleCollectionsPreLine(g *gocui.Gui, v *gocui.View) error {
-	gui.Collections.Moveup()
+	gui.Collections.cursorUp(g, v)
 	return nil
+}
+
+func (gui *Gui) handleFoldersNextLine(g *gocui.Gui, v *gocui.View) error {
+	gui.Folders.cursorDown(g, v)
+	return nil
+}
+
+func (gui *Gui) handleFoldersPreLine(g *gocui.Gui, v *gocui.View) error {
+	gui.Folders.cursorUp(g, v)
+	return nil
+}
+
+func (gui *Gui) handleSnippetsNextLine(g *gocui.Gui, v *gocui.View) error {
+	gui.Snippets.cursorDown(g, v)
+	return nil
+}
+
+func (gui *Gui) handleSnippetsPreLine(g *gocui.Gui, v *gocui.View) error {
+	gui.Snippets.cursorUp(g, v)
+	return nil
+}
+
+func (gui *Gui) focusCollectionsPanel(g *gocui.Gui, v *gocui.View) error {
+	_, err := g.SetCurrentView(COLLECTIONS_PANEL)
+	gui.Collections.v.Highlight = true
+	gui.Folders.v.Highlight = false
+	return err
+}
+
+func (gui *Gui) focusFoldersPanel(g *gocui.Gui, v *gocui.View) error {
+	_, err := g.SetCurrentView(FOLDERS_PANEL)
+	gui.Collections.v.Highlight = false
+	gui.Folders.v.Highlight = true
+	return err
+}
+
+func (gui *Gui) focusSnippetsPanel(g *gocui.Gui, v *gocui.View) error {
+	_, err := g.SetCurrentView(SNIPPETS_PANEL)
+	return err
+}
+
+func (gui *Gui) focusPreviewPanel(g *gocui.Gui, v *gocui.View) error {
+	_, err := g.SetCurrentView(PREVIEW_PANEL)
+	return err
 }
 
 func (gui *Gui) quit(g *gocui.Gui, v *gocui.View) error {

@@ -74,6 +74,48 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 			Modifier: gocui.ModNone,
 			Handler:  gui.handleCollectionsNextLine,
 		},
+		{
+			ViewName: COLLECTIONS_PANEL,
+			Key:      gocui.KeyArrowDown,
+			Modifier: gocui.ModNone,
+			Handler:  gui.focusFoldersPanel,
+		},
+		{
+			ViewName: COLLECTIONS_PANEL,
+			Key:      gocui.KeyArrowRight,
+			Modifier: gocui.ModNone,
+			Handler:  gui.focusSnippetsPanel,
+		},
+		{
+			ViewName: FOLDERS_PANEL,
+			Key:      gocui.KeyArrowUp,
+			Modifier: gocui.ModNone,
+			Handler:  gui.focusCollectionsPanel,
+		},
+		{
+			ViewName: FOLDERS_PANEL,
+			Key:      gocui.KeyArrowRight,
+			Modifier: gocui.ModNone,
+			Handler:  gui.focusSnippetsPanel,
+		},
+		{
+			ViewName: SNIPPETS_PANEL,
+			Key:      gocui.KeyArrowLeft,
+			Modifier: gocui.ModNone,
+			Handler:  gui.focusCollectionsPanel,
+		},
+		{
+			ViewName: SNIPPETS_PANEL,
+			Key:      gocui.KeyArrowRight,
+			Modifier: gocui.ModNone,
+			Handler:  gui.focusPreviewPanel,
+		},
+		{
+			ViewName: PREVIEW_PANEL,
+			Key:      gocui.KeyArrowLeft,
+			Modifier: gocui.ModNone,
+			Handler:  gui.focusSnippetsPanel,
+		},
 	}
 
 	panelMap := map[string]struct {
@@ -81,7 +123,9 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 		onKeyDownPress func(*gocui.Gui, *gocui.View) error
 		onClick        func(*gocui.Gui, *gocui.View) error
 	}{
-		COLLECTIONS_PANEL: {onKeyUpPress: gui.handleCollectionsNextLine, onKeyDownPress: gui.handleCollectionsNextLine, onClick: gui.handleCollectionsNextLine},
+		COLLECTIONS_PANEL: {onKeyUpPress: gui.handleCollectionsPreLine, onKeyDownPress: gui.handleCollectionsNextLine, onClick: gui.handleCollectionsNextLine},
+		FOLDERS_PANEL:     {onKeyUpPress: gui.handleFoldersPreLine, onKeyDownPress: gui.handleFoldersNextLine, onClick: gui.handleFoldersNextLine},
+		SNIPPETS_PANEL:    {onKeyUpPress: gui.handleSnippetsPreLine, onKeyDownPress: gui.handleSnippetsNextLine, onClick: gui.handleSnippetsNextLine},
 	}
 
 	for viewName, functions := range panelMap {
