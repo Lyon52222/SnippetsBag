@@ -69,6 +69,14 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 	g.Highlight = true
 	width, height := g.Size()
 
+	if v, err := g.SetView(PREVIEW_PANEL, width/5*2, 0, width-1, height-1); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Title = "Preview"
+		gui.Preview, err = NewPreviewPanel(v, gui.Data)
+	}
+
 	if v, err := g.SetView(COLLECTIONS_PANEL, 0, 0, width/6, height/4); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
@@ -78,7 +86,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		v.SelBgColor = gocui.ColorGreen
 		v.SelFgColor = gocui.ColorBlack
 
-		gui.Collections, err = NewColletionsPanel(v)
+		gui.Collections, err = NewColletionsPanel(v, gui.Data)
 		if err != nil {
 			return err
 		}
@@ -89,21 +97,6 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 
 	}
 
-	if v, err := g.SetView(FOLDERS_PANEL, 0, height/4, width/6, height-1); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		v.Title = "Folders"
-		v.SelBgColor = gocui.ColorGreen
-		v.SelFgColor = gocui.ColorBlack
-		gui.Folders, err = NewFoldersPanel(v)
-		if err != nil {
-			return err
-		}
-		gui.Folders.AddFolders(gui.Data.GetAllFolders())
-		gui.Folders.ShowFolders()
-	}
-
 	if v, err := g.SetView(SNIPPETS_PANEL, width/6, 0, width/5*2, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
@@ -112,7 +105,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		v.Highlight = true
 		v.SelBgColor = gocui.ColorGreen
 		v.SelFgColor = gocui.ColorBlack
-		gui.Snippets, err = NewSnippetsPanel(v)
+		gui.Snippets, err = NewSnippetsPanel(v, gui.Data, gui.Preview)
 		if err != nil {
 			return err
 		}
@@ -120,12 +113,19 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		gui.Snippets.ShowSnippets()
 	}
 
-	if v, err := g.SetView(PREVIEW_PANEL, width/5*2, 0, width-1, height-1); err != nil {
+	if v, err := g.SetView(FOLDERS_PANEL, 0, height/4, width/6, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Title = "Preview"
-		gui.Preview, err = NewPreviewPanel(v)
+		v.Title = "Folders"
+		v.SelBgColor = gocui.ColorGreen
+		v.SelFgColor = gocui.ColorBlack
+		gui.Folders, err = NewFoldersPanel(v, gui.Data, gui.Snippets)
+		if err != nil {
+			return err
+		}
+		gui.Folders.AddFolders(gui.Data.GetAllFolders())
+		gui.Folders.ShowFolders()
 	}
 
 	return nil

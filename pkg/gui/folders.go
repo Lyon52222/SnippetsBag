@@ -4,17 +4,22 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/Lyon52222/snippetsbag/pkg/data"
 	"github.com/jroimartin/gocui"
 )
 
 type FoldersPanel struct {
-	v       *gocui.View
-	folders []string
+	v            *gocui.View
+	folders      []string
+	dataloader   *data.DataLoader
+	snippetPanel *SnipeetsPanel
 }
 
-func NewFoldersPanel(v *gocui.View) (*FoldersPanel, error) {
+func NewFoldersPanel(v *gocui.View, dataloader *data.DataLoader, snippetPanel *SnipeetsPanel) (*FoldersPanel, error) {
 	foldersPanel := &FoldersPanel{
-		v: v,
+		v:            v,
+		dataloader:   dataloader,
+		snippetPanel: snippetPanel,
 	}
 	return foldersPanel, nil
 }
@@ -24,6 +29,21 @@ func (f *FoldersPanel) ShowFolders() {
 		_, name := path.Split(folder)
 		fmt.Fprintln(f.v, name)
 	}
+	f.setCursorY(0)
+}
+
+func (f *FoldersPanel) setCursorY(y int) error {
+	cx, _ := f.v.Cursor()
+	ox, _ := f.v.Origin()
+	if err := f.v.SetCursor(cx, 0); err != nil {
+		if err := f.v.SetOrigin(ox, 0); err != nil {
+			return err
+		}
+	}
+	if err := f.snippetPanel.Refresh(f.GetCurrentFolder()); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (f *FoldersPanel) AddFolders(folders []string) {
@@ -48,6 +68,9 @@ func (f *FoldersPanel) cursorDown(g *gocui.Gui, v *gocui.View) error {
 
 		}
 	}
+	if err := f.snippetPanel.Refresh(f.GetCurrentFolder()); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -60,6 +83,9 @@ func (f *FoldersPanel) cursorUp(g *gocui.Gui, v *gocui.View) error {
 				return err
 			}
 		}
+	}
+	if err := f.snippetPanel.Refresh(f.GetCurrentFolder()); err != nil {
+		return err
 	}
 	return nil
 }

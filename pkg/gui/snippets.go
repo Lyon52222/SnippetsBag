@@ -4,17 +4,22 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/Lyon52222/snippetsbag/pkg/data"
 	"github.com/jroimartin/gocui"
 )
 
 type SnipeetsPanel struct {
-	v        *gocui.View
-	snippets []string
+	v            *gocui.View
+	snippets     []string
+	dataloader   *data.DataLoader
+	previewPanel *PreviewPanel
 }
 
-func NewSnippetsPanel(v *gocui.View) (*SnipeetsPanel, error) {
+func NewSnippetsPanel(v *gocui.View, dataloader *data.DataLoader, previewPanel *PreviewPanel) (*SnipeetsPanel, error) {
 	snipeetsPanel := &SnipeetsPanel{
-		v: v,
+		v:            v,
+		dataloader:   dataloader,
+		previewPanel: previewPanel,
 	}
 
 	return snipeetsPanel, nil
@@ -26,6 +31,28 @@ func (s *SnipeetsPanel) ShowSnippets() {
 		_, name := path.Split(snippet)
 		fmt.Fprintln(s.v, name)
 	}
+	s.SetCursorY(0)
+}
+
+func (s *SnipeetsPanel) Refresh(folder string) error {
+	s.snippets = s.dataloader.GetSnippetsFromPath(folder)
+	s.SetCursorY(0)
+	s.ShowSnippets()
+	return nil
+}
+
+func (s *SnipeetsPanel) SetCursorY(y int) error {
+	cx, _ := s.v.Cursor()
+	ox, _ := s.v.Origin()
+	if err := s.v.SetCursor(cx, 0); err != nil {
+		if err := s.v.SetOrigin(ox, 0); err != nil {
+			return err
+		}
+	}
+	if err := s.previewPanel.Refresh(s.GetCurrentSnippetPath()); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *SnipeetsPanel) GetCurrentSnippetPath() string {
@@ -54,6 +81,9 @@ func (s *SnipeetsPanel) cursorDown(g *gocui.Gui, v *gocui.View) error {
 
 		}
 	}
+	if err := s.previewPanel.Refresh(s.GetCurrentSnippetPath()); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -66,6 +96,9 @@ func (s *SnipeetsPanel) cursorUp(g *gocui.Gui, v *gocui.View) error {
 				return err
 			}
 		}
+	}
+	if err := s.previewPanel.Refresh(s.GetCurrentSnippetPath()); err != nil {
+		return err
 	}
 	return nil
 }

@@ -53,55 +53,27 @@ func (gui *Gui) Run() error {
 }
 
 func (gui *Gui) handleCollectionsNextLine(g *gocui.Gui, v *gocui.View) error {
-	gui.Collections.cursorDown(g, v)
-	return nil
+	return gui.Collections.cursorDown(g, v)
 }
 
 func (gui *Gui) handleCollectionsPreLine(g *gocui.Gui, v *gocui.View) error {
-	gui.Collections.cursorUp(g, v)
-	return nil
+	return gui.Collections.cursorUp(g, v)
 }
 
 func (gui *Gui) handleFoldersNextLine(g *gocui.Gui, v *gocui.View) error {
-	gui.Folders.cursorDown(g, v)
-	folder := gui.Folders.GetCurrentFolder()
-	gui.Snippets.SetSnippets(gui.Data.GetSnippetsFromPath(folder))
-	gui.Snippets.ShowSnippets()
-	return nil
+	return gui.Folders.cursorDown(g, v)
 }
 
 func (gui *Gui) handleFoldersPreLine(g *gocui.Gui, v *gocui.View) error {
-	gui.Folders.cursorUp(g, v)
-	folder := gui.Folders.GetCurrentFolder()
-	gui.Snippets.SetSnippets(gui.Data.GetSnippetsFromPath(folder))
-	gui.Snippets.ShowSnippets()
-	return nil
+	return gui.Folders.cursorUp(g, v)
 }
 
 func (gui *Gui) handleSnippetsNextLine(g *gocui.Gui, v *gocui.View) error {
-	gui.Snippets.cursorDown(g, v)
-	snippetPath := gui.Snippets.GetCurrentSnippetPath()
-	snippet, err := gui.Data.ReadSnippet(snippetPath)
-	if err != nil {
-		return err
-	}
-	gui.Preview.SetSnippetPath(snippetPath)
-	gui.Preview.SetSnippet(snippet)
-	gui.Preview.ShowSnippet()
-	return nil
+	return gui.Snippets.cursorDown(g, v)
 }
 
 func (gui *Gui) handleSnippetsPreLine(g *gocui.Gui, v *gocui.View) error {
-	gui.Snippets.cursorUp(g, v)
-	snippetPath := gui.Snippets.GetCurrentSnippetPath()
-	snippet, err := gui.Data.ReadSnippet(snippetPath)
-	if err != nil {
-		return err
-	}
-	gui.Preview.SetSnippetPath(snippetPath)
-	gui.Preview.SetSnippet(snippet)
-	gui.Preview.ShowSnippet()
-	return nil
+	return gui.Snippets.cursorUp(g, v)
 }
 
 func (gui *Gui) focusCollectionsPanel(g *gocui.Gui, v *gocui.View) error {

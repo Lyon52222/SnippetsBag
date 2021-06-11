@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/Lyon52222/snippetsbag/pkg/data"
 	"github.com/jroimartin/gocui"
 )
 
 type CollectionsPanel struct {
 	v          *gocui.View
 	colletions []string
+	dataloader *data.DataLoader
 }
 
-func NewColletionsPanel(v *gocui.View) (*CollectionsPanel, error) {
+func NewColletionsPanel(v *gocui.View, dataloader *data.DataLoader) (*CollectionsPanel, error) {
 	collectionsPanel := &CollectionsPanel{
 		v:          v,
+		dataloader: dataloader,
 		colletions: []string{"\uf719 All Snippets", "\ue7c5 Vim", "\ue795 Shell"},
 	}
 	return collectionsPanel, nil
