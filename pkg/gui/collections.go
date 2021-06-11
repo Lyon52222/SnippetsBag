@@ -2,6 +2,7 @@ package gui
 
 import (
 	"fmt"
+	"path"
 
 	"github.com/jroimartin/gocui"
 )
@@ -22,7 +23,8 @@ func NewColletionsPanel(v *gocui.View) (*CollectionsPanel, error) {
 
 func (c *CollectionsPanel) ShowCollections() {
 	for _, colletion := range c.colletions {
-		fmt.Fprintln(c.v, colletion)
+		_, file := path.Split(colletion)
+		fmt.Fprintln(c.v, file)
 	}
 }
 

@@ -1,8 +1,6 @@
 package gui
 
 import (
-	"log"
-
 	"github.com/jroimartin/gocui"
 )
 
@@ -127,12 +125,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "Preview"
-		snippet, err := gui.Data.ReadSnippet("/Users/admin/.snippets/Python/test.py")
-		if err == nil {
-			v.Write(snippet)
-		} else {
-			log.Panicln(err)
-		}
+		gui.Preview, err = NewPreviewPanel(v)
 	}
 
 	return nil

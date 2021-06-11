@@ -2,6 +2,7 @@ package gui
 
 import (
 	"fmt"
+	"path"
 
 	"github.com/jroimartin/gocui"
 )
@@ -20,13 +21,20 @@ func NewFoldersPanel(v *gocui.View) (*FoldersPanel, error) {
 
 func (f *FoldersPanel) ShowFolders() {
 	for _, folder := range f.folders {
-		fmt.Fprintln(f.v, folder)
+		_, name := path.Split(folder)
+		fmt.Fprintln(f.v, name)
 	}
 }
 
 func (f *FoldersPanel) AddFolders(folders []string) {
 	f.folders = append(f.folders, folders...)
 }
+
+func (f *FoldersPanel) GetCurrentFolder() string {
+	_, cy := f.v.Cursor()
+	return f.folders[cy]
+}
+
 func (f *FoldersPanel) cursorDown(g *gocui.Gui, v *gocui.View) error {
 	if v != nil {
 		cx, cy := v.Cursor()

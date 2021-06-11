@@ -3,7 +3,6 @@ package data
 import (
 	"io/ioutil"
 	"os"
-	"path"
 
 	"github.com/Lyon52222/snippetsbag/pkg/config"
 	"github.com/Lyon52222/snippetsbag/pkg/utils"
@@ -24,18 +23,26 @@ func (data *DataLoader) GetAllSnippets() []string {
 	var allSnippets []string
 	for _, f := range utils.GetChildFolders(data.Config.SnippetsDir) {
 		for _, file := range utils.GetChildFiles(f) {
-			_, snippet := path.Split(file)
-			allSnippets = append(allSnippets, snippet)
+			//_, snippet := path.Split(file)
+			allSnippets = append(allSnippets, file)
 		}
 	}
 	return allSnippets
 }
 
+func (data *DataLoader) GetSnippetsFromPath(path string) []string {
+	var snippets []string
+	for _, file := range utils.GetChildFiles(path) {
+		snippets = append(snippets, file)
+	}
+	return snippets
+}
+
 func (data *DataLoader) GetAllFolders() []string {
 	var allFolders []string
 	for _, f := range utils.GetChildFolders(data.Config.SnippetsDir) {
-		_, file := path.Split(f)
-		allFolders = append(allFolders, file)
+		//_, file := path.Split(f)
+		allFolders = append(allFolders, f)
 	}
 	return allFolders
 }

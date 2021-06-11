@@ -15,6 +15,7 @@ type Gui struct {
 	Collections *CollectionsPanel
 	Folders     *FoldersPanel
 	Snippets    *SnipeetsPanel
+	Preview     *PreviewPanel
 }
 
 func NewGui(config *config.AppConfig) (*Gui, error) {
@@ -63,21 +64,43 @@ func (gui *Gui) handleCollectionsPreLine(g *gocui.Gui, v *gocui.View) error {
 
 func (gui *Gui) handleFoldersNextLine(g *gocui.Gui, v *gocui.View) error {
 	gui.Folders.cursorDown(g, v)
+	folder := gui.Folders.GetCurrentFolder()
+	gui.Snippets.SetSnippets(gui.Data.GetSnippetsFromPath(folder))
+	gui.Snippets.ShowSnippets()
 	return nil
 }
 
 func (gui *Gui) handleFoldersPreLine(g *gocui.Gui, v *gocui.View) error {
 	gui.Folders.cursorUp(g, v)
+	folder := gui.Folders.GetCurrentFolder()
+	gui.Snippets.SetSnippets(gui.Data.GetSnippetsFromPath(folder))
+	gui.Snippets.ShowSnippets()
 	return nil
 }
 
 func (gui *Gui) handleSnippetsNextLine(g *gocui.Gui, v *gocui.View) error {
 	gui.Snippets.cursorDown(g, v)
+	snippetPath := gui.Snippets.GetCurrentSnippetPath()
+	snippet, err := gui.Data.ReadSnippet(snippetPath)
+	if err != nil {
+		return err
+	}
+	gui.Preview.SetSnippetPath(snippetPath)
+	gui.Preview.SetSnippet(snippet)
+	gui.Preview.ShowSnippet()
 	return nil
 }
 
 func (gui *Gui) handleSnippetsPreLine(g *gocui.Gui, v *gocui.View) error {
 	gui.Snippets.cursorUp(g, v)
+	snippetPath := gui.Snippets.GetCurrentSnippetPath()
+	snippet, err := gui.Data.ReadSnippet(snippetPath)
+	if err != nil {
+		return err
+	}
+	gui.Preview.SetSnippetPath(snippetPath)
+	gui.Preview.SetSnippet(snippet)
+	gui.Preview.ShowSnippet()
 	return nil
 }
 
