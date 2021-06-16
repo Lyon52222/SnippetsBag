@@ -3,24 +3,27 @@ package gui
 import (
 	"github.com/Lyon52222/snippetsbag/pkg/config"
 	"github.com/Lyon52222/snippetsbag/pkg/data"
+	"github.com/golang-collections/collections/stack"
 	"github.com/jroimartin/gocui"
 	"github.com/sirupsen/logrus"
 )
 
 type Gui struct {
-	g           *gocui.Gui
-	Log         *logrus.Entry
-	Config      *config.AppConfig
-	Data        *data.DataLoader
-	Collections *CollectionsPanel
-	Folders     *FoldersPanel
-	Snippets    *SnipeetsPanel
-	Preview     *PreviewPanel
+	g            *gocui.Gui
+	Log          *logrus.Entry
+	Config       *config.AppConfig
+	Data         *data.DataLoader
+	Collections  *CollectionsPanel
+	Folders      *FoldersPanel
+	Snippets     *SnipeetsPanel
+	Preview      *PreviewPanel
+	PreviewViews *stack.Stack
 }
 
 func NewGui(config *config.AppConfig) (*Gui, error) {
 	gui := &Gui{
-		Config: config,
+		Config:       config,
+		PreviewViews: stack.New(),
 	}
 	data, err := data.NewData(config)
 	if err != nil {
@@ -39,6 +42,8 @@ func (gui *Gui) Run() error {
 	}
 	defer g.Close()
 
+	g.Highlight = true
+	g.SelFgColor = gocui.ColorRed
 	gui.g = g
 
 	//g.SetManager(gocui.ManagerFunc(gui.layout), gocui.ManagerFunc(gui.getFocusLayout()))
@@ -52,6 +57,7 @@ func (gui *Gui) Run() error {
 	return err
 }
 
+//----------
 func (gui *Gui) handleCollectionsNextLine(g *gocui.Gui, v *gocui.View) error {
 	return gui.Collections.cursorDown(g, v)
 }
@@ -102,4 +108,10 @@ func (gui *Gui) focusPreviewPanel(g *gocui.Gui, v *gocui.View) error {
 
 func (gui *Gui) quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
+}
+
+//----------
+
+func (gui *Gui) initiallyFocusedView() string {
+	return SNIPPETS_PANEL
 }

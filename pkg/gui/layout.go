@@ -69,7 +69,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 	g.Highlight = true
 	width, height := g.Size()
 
-	if v, err := g.SetView(PREVIEW_PANEL, width/5*2, 0, width-1, height-1); err != nil {
+	if v, err := g.SetView(PREVIEW_PANEL, width/5*2+1, 0, width-1, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -97,7 +97,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 
 	}
 
-	if v, err := g.SetView(SNIPPETS_PANEL, width/6, 0, width/5*2, height-1); err != nil {
+	if v, err := g.SetView(SNIPPETS_PANEL, width/6+1, 0, width/5*2, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -113,7 +113,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		gui.Snippets.ShowSnippets()
 	}
 
-	if v, err := g.SetView(FOLDERS_PANEL, 0, height/4, width/6, height-1); err != nil {
+	if v, err := g.SetView(FOLDERS_PANEL, 0, height/4+1, width/6, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
