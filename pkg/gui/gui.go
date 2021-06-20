@@ -3,6 +3,7 @@ package gui
 import (
 	"github.com/Lyon52222/snippetsbag/pkg/config"
 	"github.com/Lyon52222/snippetsbag/pkg/data"
+	"github.com/Lyon52222/snippetsbag/pkg/i18n"
 	"github.com/golang-collections/collections/stack"
 	"github.com/jroimartin/gocui"
 	"github.com/sirupsen/logrus"
@@ -12,6 +13,7 @@ type Gui struct {
 	g            *gocui.Gui
 	Log          *logrus.Entry
 	Config       *config.AppConfig
+	Tr           *i18n.TranslationSet
 	Data         *data.DataLoader
 	Collections  *CollectionsPanel
 	Folders      *FoldersPanel
@@ -20,9 +22,11 @@ type Gui struct {
 	PreviewViews *stack.Stack
 }
 
-func NewGui(config *config.AppConfig) (*Gui, error) {
+func NewGui(log *logrus.Entry, config *config.AppConfig, tr *i18n.TranslationSet) (*Gui, error) {
 	gui := &Gui{
+		Log:          log,
 		Config:       config,
+		Tr:           tr,
 		PreviewViews: stack.New(),
 	}
 	data, err := data.NewData(config)
