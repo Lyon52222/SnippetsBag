@@ -54,3 +54,7 @@ func (data *DataLoader) ReadSnippet(snippetPath string) ([]byte, error) {
 	}
 	return ioutil.ReadAll(f)
 }
+
+func (data *DataLoader) CreateNewFolder(name string) error {
+	return utils.NewDir(name)
+}

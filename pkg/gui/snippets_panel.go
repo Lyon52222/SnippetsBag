@@ -21,7 +21,7 @@ func NewSnippetsPanel(v *gocui.View, dataloader *data.DataLoader, previewPanel *
 		dataloader:   dataloader,
 		previewPanel: previewPanel,
 	}
-
+	snipeetsPanel.snippets = append(snipeetsPanel.snippets, snipeetsPanel.dataloader.GetAllSnippets()...)
 	return snipeetsPanel, nil
 }
 
@@ -36,6 +36,11 @@ func (s *SnipeetsPanel) ShowSnippets() {
 
 func (s *SnipeetsPanel) Refresh(folder string) error {
 	s.snippets = s.dataloader.GetSnippetsFromPath(folder)
+	if len(s.snippets) == 0 {
+		s.v.Clear()
+		s.previewPanel.v.Clear()
+		return nil
+	}
 	s.SetCursorY(0)
 	s.ShowSnippets()
 	return nil

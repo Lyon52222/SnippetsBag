@@ -1,6 +1,9 @@
 package gui
 
 import (
+	"path"
+	"strings"
+
 	"github.com/Lyon52222/snippetsbag/pkg/config"
 	"github.com/Lyon52222/snippetsbag/pkg/data"
 	"github.com/Lyon52222/snippetsbag/pkg/i18n"
@@ -68,6 +71,23 @@ func (gui *Gui) handleCollectionsNextLine(g *gocui.Gui, v *gocui.View) error {
 
 func (gui *Gui) handleCollectionsPreLine(g *gocui.Gui, v *gocui.View) error {
 	return gui.Collections.cursorUp(g, v)
+}
+
+func (gui *Gui) createNewFolder(g *gocui.Gui, v *gocui.View) error {
+	confirmationPanel, _ := g.View(CONFIRMATION_PANEL)
+	dirName := confirmationPanel.Buffer()
+	dirName = strings.Replace(dirName, "\n", "", -1)
+	dirName = path.Join(gui.Config.SnippetsDir, dirName)
+	if err := gui.Data.CreateNewFolder(dirName); err != nil {
+		return err
+	}
+	gui.Folders.AddFolder(dirName)
+	return nil
+}
+
+func (gui *Gui) handleCreateNewFolder(g *gocui.Gui, v *gocui.View) error {
+	//return gui.createConfirmationPanel(g, v, "title", "prompt", nil, nil)
+	return gui.createPromptPanel(g, v, gui.Tr.CreateNewFolderPanelTitle, gui.createNewFolder)
 }
 
 func (gui *Gui) handleFoldersNextLine(g *gocui.Gui, v *gocui.View) error {

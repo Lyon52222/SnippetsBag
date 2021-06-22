@@ -109,7 +109,6 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err != nil {
 			return err
 		}
-		gui.Snippets.AddSnippets(gui.Data.GetAllSnippets())
 		gui.Snippets.ShowSnippets()
 	}
 
@@ -124,7 +123,6 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err != nil {
 			return err
 		}
-		gui.Folders.AddFolders(gui.Data.GetAllFolders())
 		gui.Folders.ShowFolders()
 	}
 

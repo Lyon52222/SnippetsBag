@@ -21,6 +21,7 @@ func NewFoldersPanel(v *gocui.View, dataloader *data.DataLoader, snippetPanel *S
 		dataloader:   dataloader,
 		snippetPanel: snippetPanel,
 	}
+	foldersPanel.folders = append(foldersPanel.folders, foldersPanel.dataloader.GetAllFolders()...)
 	return foldersPanel, nil
 }
 
@@ -48,6 +49,16 @@ func (f *FoldersPanel) setCursorY(y int) error {
 
 func (f *FoldersPanel) AddFolders(folders []string) {
 	f.folders = append(f.folders, folders...)
+	for _, folder := range folders {
+		_, name := path.Split(folder)
+		fmt.Fprintln(f.v, name)
+	}
+}
+
+func (f *FoldersPanel) AddFolder(folder string) {
+	f.folders = append(f.folders, folder)
+	_, name := path.Split(folder)
+	fmt.Fprintln(f.v, name)
 }
 
 func (f *FoldersPanel) GetCurrentFolder() string {

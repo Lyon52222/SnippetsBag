@@ -98,6 +98,9 @@ func IsExist(name string) bool {
 
 func NewDir(dir string) error {
 	// TODO use inputed permission
+	if IsExist(dir) {
+		return ErrDirExists
+	}
 	return os.Mkdir(dir, 0777)
 }
 

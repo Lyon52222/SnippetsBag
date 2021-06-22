@@ -56,23 +56,17 @@ func (b *Binding) GetKey() string {
 
 func (gui *Gui) GetInitialKeybindings() []*Binding {
 	bindings := []*Binding{
+		//{
+		//ViewName: "",
+		//Key:      'q',
+		//Modifier: gocui.ModNone,
+		//Handler:  gui.quit,
+		//},
 		{
 			ViewName: "",
-			Key:      'q',
+			Key:      gocui.KeyCtrlQ,
 			Modifier: gocui.ModNone,
 			Handler:  gui.quit,
-		},
-		{
-			ViewName: "",
-			Key:      gocui.KeyCtrlC,
-			Modifier: gocui.ModNone,
-			Handler:  gui.quit,
-		},
-		{
-			ViewName: "",
-			Key:      't',
-			Modifier: gocui.ModNone,
-			Handler:  gui.handleCollectionsNextLine,
 		},
 		{
 			ViewName: COLLECTIONS_PANEL,
@@ -85,6 +79,12 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 			Key:      gocui.KeyArrowRight,
 			Modifier: gocui.ModNone,
 			Handler:  gui.focusSnippetsPanel,
+		},
+		{
+			ViewName: FOLDERS_PANEL,
+			Key:      'a',
+			Modifier: gocui.ModNone,
+			Handler:  gui.handleCreateNewFolder,
 		},
 		{
 			ViewName: FOLDERS_PANEL,
@@ -121,11 +121,10 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 	panelMap := map[string]struct {
 		onKeyUpPress   func(*gocui.Gui, *gocui.View) error
 		onKeyDownPress func(*gocui.Gui, *gocui.View) error
-		onClick        func(*gocui.Gui, *gocui.View) error
 	}{
-		COLLECTIONS_PANEL: {onKeyUpPress: gui.handleCollectionsPreLine, onKeyDownPress: gui.handleCollectionsNextLine, onClick: gui.handleCollectionsNextLine},
-		FOLDERS_PANEL:     {onKeyUpPress: gui.handleFoldersPreLine, onKeyDownPress: gui.handleFoldersNextLine, onClick: gui.handleFoldersNextLine},
-		SNIPPETS_PANEL:    {onKeyUpPress: gui.handleSnippetsPreLine, onKeyDownPress: gui.handleSnippetsNextLine, onClick: gui.handleSnippetsNextLine},
+		COLLECTIONS_PANEL: {onKeyUpPress: gui.handleCollectionsPreLine, onKeyDownPress: gui.handleCollectionsNextLine},
+		FOLDERS_PANEL:     {onKeyUpPress: gui.handleFoldersPreLine, onKeyDownPress: gui.handleFoldersNextLine},
+		SNIPPETS_PANEL:    {onKeyUpPress: gui.handleSnippetsPreLine, onKeyDownPress: gui.handleSnippetsNextLine},
 	}
 
 	for viewName, functions := range panelMap {
