@@ -58,3 +58,7 @@ func (data *DataLoader) ReadSnippet(snippetPath string) ([]byte, error) {
 func (data *DataLoader) CreateNewFolder(name string) error {
 	return utils.NewDir(name)
 }
+
+func (data *DataLoader) CreateNewSnippet(name string) error {
+	return utils.NewFile(name)
+}

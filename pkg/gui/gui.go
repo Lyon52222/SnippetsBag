@@ -90,6 +90,21 @@ func (gui *Gui) handleCreateNewFolder(g *gocui.Gui, v *gocui.View) error {
 	return gui.createPromptPanel(g, v, gui.Tr.CreateNewFolderPanelTitle, gui.createNewFolder)
 }
 
+func (gui *Gui) createNewSnippet(g *gocui.Gui, v *gocui.View) error {
+	confirmationPanel, _ := g.View(CONFIRMATION_PANEL)
+	snippetName := confirmationPanel.Buffer()
+	snippetName = strings.Replace(snippetName, "\n", "", -1)
+	snippetName = path.Join(gui.Folders.GetCurrentFolder(), snippetName)
+	if err := gui.Data.CreateNewSnippet(snippetName); err != nil {
+		return err
+	}
+	gui.Snippets.AddSnippet(snippetName)
+	return nil
+}
+func (gui *Gui) handleCreateNewSnippet(g *gocui.Gui, v *gocui.View) error {
+	return gui.createPromptPanel(g, v, gui.Tr.CreateNewFolderPanelTitle, gui.createNewSnippet)
+}
+
 func (gui *Gui) handleFoldersNextLine(g *gocui.Gui, v *gocui.View) error {
 	return gui.Folders.cursorDown(g, v)
 }

@@ -67,6 +67,17 @@ func (s *SnipeetsPanel) GetCurrentSnippetPath() string {
 
 func (s *SnipeetsPanel) AddSnippets(snippets []string) {
 	s.snippets = append(s.snippets, snippets...)
+	for _, snippet := range snippets {
+		_, name := path.Split(snippet)
+		fmt.Fprintln(s.v, name)
+	}
+}
+
+func (s *SnipeetsPanel) AddSnippet(snippet string) {
+	s.snippets = append(s.snippets, snippet)
+	_, name := path.Split(snippet)
+	fmt.Fprintln(s.v, name)
+
 }
 
 func (s *SnipeetsPanel) SetSnippets(snippets []string) {

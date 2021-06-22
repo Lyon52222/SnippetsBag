@@ -100,6 +100,12 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 		},
 		{
 			ViewName: SNIPPETS_PANEL,
+			Key:      'a',
+			Modifier: gocui.ModNone,
+			Handler:  gui.handleCreateNewSnippet,
+		},
+		{
+			ViewName: SNIPPETS_PANEL,
 			Key:      gocui.KeyArrowLeft,
 			Modifier: gocui.ModNone,
 			Handler:  gui.focusCollectionsPanel,
