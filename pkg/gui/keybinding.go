@@ -122,6 +122,12 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 			Modifier: gocui.ModNone,
 			Handler:  gui.focusSnippetsPanel,
 		},
+		{
+			ViewName: PREVIEW_PANEL,
+			Key:      'e',
+			Modifier: gocui.ModNone,
+			Handler:  gui.OpenSnippetWithEditor,
+		},
 	}
 
 	panelMap := map[string]struct {

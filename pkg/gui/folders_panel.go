@@ -3,6 +3,7 @@ package gui
 import (
 	"fmt"
 	"path"
+	"strings"
 
 	"github.com/Lyon52222/snippetsbag/pkg/data"
 	"github.com/jroimartin/gocui"
@@ -30,7 +31,7 @@ func (f *FoldersPanel) ShowFolders() {
 		_, name := path.Split(folder)
 		fmt.Fprintln(f.v, name)
 	}
-	f.setCursorY(0)
+	//f.setCursorY(0)
 }
 
 func (f *FoldersPanel) setCursorY(y int) error {
@@ -98,5 +99,43 @@ func (f *FoldersPanel) cursorUp(g *gocui.Gui, v *gocui.View) error {
 	if err := f.snippetPanel.Refresh(f.GetCurrentFolder()); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (gui *Gui) handleFoldersNextLine(g *gocui.Gui, v *gocui.View) error {
+	return gui.Folders.cursorDown(g, v)
+}
+
+func (gui *Gui) handleFoldersPreLine(g *gocui.Gui, v *gocui.View) error {
+	return gui.Folders.cursorUp(g, v)
+}
+
+func (gui *Gui) createNewFolder(g *gocui.Gui, v *gocui.View) error {
+	confirmationPanel, _ := g.View(CONFIRMATION_PANEL)
+	dirName := confirmationPanel.Buffer()
+	dirName = strings.Replace(dirName, "\n", "", -1)
+	dirName = path.Join(gui.Config.SnippetsDir, dirName)
+	if err := gui.Data.CreateNewFolder(dirName); err != nil {
+		return err
+	}
+	gui.Folders.AddFolder(dirName)
+	return nil
+}
+
+func (gui *Gui) handleCreateNewFolder(g *gocui.Gui, v *gocui.View) error {
+	//return gui.createConfirmationPanel(g, v, "title", "prompt", nil, nil)
+	return gui.createPromptPanel(g, v, gui.Tr.CreateNewFolderPanelTitle, gui.createNewFolder)
+}
+
+func (gui *Gui) focusFoldersPanel(g *gocui.Gui, v *gocui.View) error {
+	if _, err := g.SetCurrentView(FOLDERS_PANEL); err != nil {
+		return err
+	}
+
+	if err := gui.Snippets.Refresh(gui.Folders.GetCurrentFolder()); err != nil {
+		return err
+	}
+	gui.Collections.v.Highlight = false
+	gui.Folders.v.Highlight = true
 	return nil
 }

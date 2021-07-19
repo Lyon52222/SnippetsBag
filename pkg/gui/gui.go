@@ -1,9 +1,6 @@
 package gui
 
 import (
-	"path"
-	"strings"
-
 	"github.com/Lyon52222/snippetsbag/pkg/config"
 	"github.com/Lyon52222/snippetsbag/pkg/data"
 	"github.com/Lyon52222/snippetsbag/pkg/i18n"
@@ -65,80 +62,6 @@ func (gui *Gui) Run() error {
 }
 
 //----------
-func (gui *Gui) handleCollectionsNextLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.Collections.cursorDown(g, v)
-}
-
-func (gui *Gui) handleCollectionsPreLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.Collections.cursorUp(g, v)
-}
-
-func (gui *Gui) createNewFolder(g *gocui.Gui, v *gocui.View) error {
-	confirmationPanel, _ := g.View(CONFIRMATION_PANEL)
-	dirName := confirmationPanel.Buffer()
-	dirName = strings.Replace(dirName, "\n", "", -1)
-	dirName = path.Join(gui.Config.SnippetsDir, dirName)
-	if err := gui.Data.CreateNewFolder(dirName); err != nil {
-		return err
-	}
-	gui.Folders.AddFolder(dirName)
-	return nil
-}
-
-func (gui *Gui) handleCreateNewFolder(g *gocui.Gui, v *gocui.View) error {
-	//return gui.createConfirmationPanel(g, v, "title", "prompt", nil, nil)
-	return gui.createPromptPanel(g, v, gui.Tr.CreateNewFolderPanelTitle, gui.createNewFolder)
-}
-
-func (gui *Gui) createNewSnippet(g *gocui.Gui, v *gocui.View) error {
-	confirmationPanel, _ := g.View(CONFIRMATION_PANEL)
-	snippetName := confirmationPanel.Buffer()
-	snippetName = strings.Replace(snippetName, "\n", "", -1)
-	snippetName = path.Join(gui.Folders.GetCurrentFolder(), snippetName)
-	if err := gui.Data.CreateNewSnippet(snippetName); err != nil {
-		return err
-	}
-	gui.Snippets.AddSnippet(snippetName)
-	return nil
-}
-func (gui *Gui) handleCreateNewSnippet(g *gocui.Gui, v *gocui.View) error {
-	return gui.createPromptPanel(g, v, gui.Tr.CreateNewFolderPanelTitle, gui.createNewSnippet)
-}
-
-func (gui *Gui) handleFoldersNextLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.Folders.cursorDown(g, v)
-}
-
-func (gui *Gui) handleFoldersPreLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.Folders.cursorUp(g, v)
-}
-
-func (gui *Gui) handleSnippetsNextLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.Snippets.cursorDown(g, v)
-}
-
-func (gui *Gui) handleSnippetsPreLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.Snippets.cursorUp(g, v)
-}
-
-func (gui *Gui) focusCollectionsPanel(g *gocui.Gui, v *gocui.View) error {
-	_, err := g.SetCurrentView(COLLECTIONS_PANEL)
-	gui.Collections.v.Highlight = true
-	gui.Folders.v.Highlight = false
-	return err
-}
-
-func (gui *Gui) focusFoldersPanel(g *gocui.Gui, v *gocui.View) error {
-	_, err := g.SetCurrentView(FOLDERS_PANEL)
-	gui.Collections.v.Highlight = false
-	gui.Folders.v.Highlight = true
-	return err
-}
-
-func (gui *Gui) focusSnippetsPanel(g *gocui.Gui, v *gocui.View) error {
-	_, err := g.SetCurrentView(SNIPPETS_PANEL)
-	return err
-}
 
 func (gui *Gui) focusPreviewPanel(g *gocui.Gui, v *gocui.View) error {
 	_, err := g.SetCurrentView(PREVIEW_PANEL)

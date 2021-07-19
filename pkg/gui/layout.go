@@ -77,26 +77,6 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		gui.Preview, err = NewPreviewPanel(v, gui.Data)
 	}
 
-	if v, err := g.SetView(COLLECTIONS_PANEL, 0, 0, width/6, height/4); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		v.Title = "Personal Collections"
-		v.Highlight = true
-		v.SelBgColor = gocui.ColorGreen
-		v.SelFgColor = gocui.ColorBlack
-
-		gui.Collections, err = NewColletionsPanel(v, gui.Data)
-		if err != nil {
-			return err
-		}
-		gui.Collections.ShowCollections()
-		if _, err := g.SetCurrentView(COLLECTIONS_PANEL); err != nil {
-			return err
-		}
-
-	}
-
 	if v, err := g.SetView(SNIPPETS_PANEL, width/6+1, 0, width/5*2, height-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
@@ -125,6 +105,23 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		}
 		gui.Folders.ShowFolders()
 	}
+	if v, err := g.SetView(COLLECTIONS_PANEL, 0, 0, width/6, height/4); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Title = "Personal Collections"
+		v.Highlight = true
+		v.SelBgColor = gocui.ColorGreen
+		v.SelFgColor = gocui.ColorBlack
 
+		gui.Collections, err = NewColletionsPanel(v, gui.Data, gui.Snippets)
+		if err != nil {
+			return err
+		}
+		gui.Collections.ShowCollections()
+		if _, err := g.SetCurrentView(COLLECTIONS_PANEL); err != nil {
+			return err
+		}
+	}
 	return nil
 }
